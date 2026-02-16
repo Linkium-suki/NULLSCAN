@@ -9,7 +9,7 @@
 <!-- 统一使用 Miku绿 (#39C5BB) 风格徽章 -->
 [![Platform](https://img.shields.io/badge/Platform-Android-39C5BB?style=for-the-badge&logo=android&logoColor=white)](https://www.android.com)
 [![Framework](https://img.shields.io/badge/Framework-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Engine](https://img.shields.io/badge/Engine-Google ML_Kit_%2F_-FF6F00?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/ml-kit)
+[![Engine](https://img.shields.io/badge/Engine-Google ML_Kit-FF6F00?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/ml-kit)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
 </div>
