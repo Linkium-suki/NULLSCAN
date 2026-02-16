@@ -2,15 +2,15 @@
 
 # 📷 NULLSCAN | 零·描
 
-**Project "Pulse": A High-Performance, Privacy-First Mobile Scanner**
+**Project "Pulse": High-Performance Offline CV Pipeline**
 <br>
-*定格现实 · 逻辑洗髓 · 纯净扫描*
+*极致离线 · 视觉重构 · 像素主权*
 
-<!-- 统一使用 Miku绿 (#39C5BB) 风格徽章 -->
+<!-- 视觉体系：Miku绿 (#39C5BB) -->
 [![Platform](https://img.shields.io/badge/Platform-Android-39C5BB?style=for-the-badge&logo=android&logoColor=white)](https://www.android.com)
 [![Framework](https://img.shields.io/badge/Framework-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Engine](https://img.shields.io/badge/Engine-Google ML_Kit-FF6F00?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/ml-kit)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
+[![CV_Engine](https://img.shields.io/badge/CV_Engine-OpenCV-5C2D91?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org)
+[![ML_Engine](https://img.shields.io/badge/ML_Engine-Google_ML_Kit-FF6F00?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/ml-kit)
 
 </div>
 
@@ -18,71 +18,57 @@
 
 ## 📖 Introduction (简介)
 
-**NULLSCAN** (Code Name: *Project Pulse*) is an industrial-grade mobile scanning utility built for the modern era.
-It is designed to replace bloated, ad-heavy legacy scanner apps with a high-performance, **Local-First** experience.
+**NULLSCAN** is a non-compromise, **100% offline** mobile scanner. 
+By combining the speed of **ML Kit** with the raw power of **OpenCV**, it delivers a hybrid vision pipeline that handles complex document scanning tasks locally on your device.
 
-**零·描** 是一款工业级的移动端扫描工具。它诞生于对臃肿、多广告、且频繁窃取隐私的传统扫描 App 的技术反抗。依托全栈原生开发，提供秒级响应的纯净体验，将数字主权彻底归还用户。
-
----
-
-## 💡 Philosophy (理念)
-
-> *"In a world of bloated马赛克, we seek the pure Logic."*
-
-在下沉市场中，传统的 IT 服务商正用着 2012 年的技术（jQuery 1.2.6 / No SSL）统治着数字边疆。**NULLSCAN** 是一场技术清流运动，它证明了即使在 3Mbps 的弱网环境下，优雅的代码逻辑依然能跑出 60FPS 的未来感。
+**零·描** 是一款拒绝妥协的**全离线**移动端扫描工具。它完美融合了 **ML Kit** 的快速感知与 **OpenCV** 的硬核图像处理能力，构建了一套混合视觉流水线。所有像素级的计算均在本地完成，真正做到零延迟、零泄露。
 
 ---
 
 ## ✨ Features (功能亮点)
 
-### 🔥 LAZARUS Mode (拉撒路模式)
-- **Handwriting Removal:** One-tap to erase handwritten ink from exam papers using local ONNX-quantized models. (一键擦除试卷笔迹)
-- **Subject Segmentation:** Pixel-perfect subject extraction, optimized for ACG merchandise and documents. (像素级主体分离)
+### 🧪 Hybrid CV Pipeline (混合视觉流水线)
+- **Aether Lens:** Real-time edge detection via ML Kit. (基于以太透镜的秒级边缘捕捉)
+- **OpenCV Engine:** Advanced perspective transformation and image normalization. (利用 OpenCV 实现精准的透视变换与拉直)
+- **Lazarus Filters:** Custom CV algorithms to remove noise and restore document clarity. (自研 CV 算法，深度去噪并复活陈旧文档)
 
-### 🧠 On-Device Intelligence (端侧智能)
-- **Aether Lens:** Real-time document edge detection powered by Google ML Kit. (基于Google ML Kit的毫秒级边缘捕捉)
-- **Zero-Metadata:** 100% offline execution. No data ever leaves your device. (零元数据策略，数据不出本地)
-
-### 🌊 Fluid Experience (丝滑体验)
-- **60FPS Interaction:** Built with Flutter's Impeller engine for zero-lag UI transitions. (基于原生渲染引擎的极致流畅)
-- **3Mbps Optimized:** Aggressive WebP compression logic for low-bandwidth environments. (针对基层弱网环境的专项链路优化)
+### 🛡️ Absolute Privacy (绝对隐私)
+- **Air-gapped by Design:** The app does not even request the `INTERNET` permission. (原生不申请网络权限，实现物理级隔离)
+- **Zero-Metadata:** We process images, not your identity. (我们只处理像素，不触碰元数据)
 
 ---
 
 ## 🛠️ Tech Stack (技术栈)
 
-Built with a focus on high-performance I/O and memory safety.
-
 | Component | Technology | Description |
 | :--- | :--- | :--- |
-| **UI Framework** | ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat-square&logo=flutter) | Ensuring cross-platform UI consistency and high refresh rates. |
-| **AI Runtime** | ![ONNX](https://img.shields.io/badge/-ONNX_Runtime-005EB8?style=flat-square) | Local inference for quantized Q4F16 deep learning models. |
-| **Security** | ![LKAS](https://img.shields.io/badge/-LKAS_Protocol-39C5BB?style=flat-square) | Zero-trust authentication via physical NFC tokens. |
+| **Framework** | ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat-square&logo=flutter) | High-performance UI with Impeller hardware acceleration. |
+| **Computer Vision** | ![OpenCV](https://img.shields.io/badge/-OpenCV-5C2D91?style=flat-square&logo=opencv) | C++ powered image processing for high-precision warping. |
+| **Machine Learning** | ![MLKit](https://img.shields.io/badge/-Google_ML_Kit-FF6F00?style=flat-square&logo=google) | On-device lightweight models for rapid object detection. |
+| **I/O & FFI** | ![Dart](https://img.shields.io/badge/-Dart_FFI-0175C2?style=flat-square&logo=dart) | Bridging Flutter with high-speed C++/Native libraries. |
 
 ---
 
 ## 🚀 How to Run (使用方法)
 
-### Alpha Testing (Alpha 测试)
-Since we are in the **Digital Nomad** phase, you can download the latest build here:
-由于处于“游牧开发”阶段，您可以获取最新的内部测试包：
+### Download (下载)
+Grab the latest verified APK from the **GitHub Releases**. 
+拒绝任何形式的中间商，请从官方 **Releases** 频道获取安装包：
 
-👉 [**Download Alpha APK (Release)**](https://github.com/Linkium-suki/NULLSCAN/releases)
-
-*Note: Requires Android 8.0+ and GMS support for the best experience.*
+👉 [**Go to Releases**](https://github.com/Linkium-suki/NULLSCAN/releases)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **Apache License 2.0**.
-The software is provided **"AS IS"**, without warranty of any kind.
+Licensed under **Apache License 2.0**.
+**The software is provided "AS IS".** 😋
 
 <br>
 
 <div align="center">
 
-*Project Pulse is currently under active development by a 13-year-old student who hates legacy code.*
+*Project Pulse: Refactoring the world, one pixel at a time.*
 <br>
 *Made with ❤️ by [Linkium](https://github.com/Linkium-suki)*
 
