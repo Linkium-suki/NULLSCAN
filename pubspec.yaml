@@ -1,0 +1,42 @@
+name: nullscan
+description: Educational document restoration terminal powered by Lazarus Engine.
+publish_to: 'none'
+version: 1.1.4+1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0' # 提高 SDK 版本以匹配新库
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- 核心依赖 (The Right Way) ---
+  # 这里引用 Flutter 专用包，它会自动拉取匹配的 dartcv4
+  opencv_dart: ^2.1.0 
+  
+  # 其他保持最新，兼容性最好
+  path_provider: ^2.1.4
+  permission_handler: ^12.0.1
+  cunning_document_scanner: ^1.4.0
+  sensors_plus: ^6.1.0
+  
+  google_mlkit_text_recognition: ^0.14.0
+  pdf: ^3.11.1
+  printing: ^5.14.0
+  intl: ^0.19.0
+  image: ^4.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  change_app_package_name: ^1.5.0
+  flutter_launcher_icons: ^0.14.4
+  
+flutter:
+  uses-material-design: true
+  # 如果你有字体文件，请在这里取消注释
+  fonts:
+     - family: TerminalFont
+       fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
