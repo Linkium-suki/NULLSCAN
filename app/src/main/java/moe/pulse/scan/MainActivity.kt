@@ -58,10 +58,20 @@ class MainActivity : FragmentActivity() {
                             onCancel = { nav.popBackStack() },
                         )
                     }
-                    composable("editor/{docKey}") { entry ->
-                        val docKey = entry.arguments?.getString("docKey") ?: "new"
+                    composable("editor/new") {
                         EditorScreen(
-                            docKey = docKey,
+                            docKey = "new",
+                            onClose = {
+                                nav.navigate("library") {
+                                    popUpTo("library") { inclusive = true }
+                                }
+                            },
+                        )
+                    }
+                    composable("editor/doc/{docId}") { entry ->
+                        val docId = entry.arguments?.getString("docId") ?: "0"
+                        EditorScreen(
+                            docKey = "doc/$docId",
                             onClose = {
                                 nav.navigate("library") {
                                     popUpTo("library") { inclusive = true }

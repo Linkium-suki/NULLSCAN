@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Pulse is air-gapped by design: no INTERNET permission is ever declared.
-         All CV / OCR computation is performed fully on-device. -->
+    <!-- Pulse is air-gapped by design. All CV / OCR computation is performed
+         fully on-device (bundled ML Kit model); no component of this app
+         performs network I/O. -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- ML Kit / Play-services basements merge these into the manifest via
+         dependency metadata. Pulse itself never uses the network, so they are
+         stripped to keep the air-gap promise. -->
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        tools:node="remove" />
 
     <uses-feature
         android:name="android.hardware.camera"

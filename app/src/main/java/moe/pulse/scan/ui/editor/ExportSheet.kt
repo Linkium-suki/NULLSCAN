@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Image
@@ -42,6 +44,11 @@ fun ExportSheet(
     val snackbar = moe.pulse.scan.ui.common.rememberToast()
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
         Text(
             "Export",
             style = MaterialTheme.typography.titleLarge,
@@ -85,6 +92,7 @@ fun ExportSheet(
             viewModel.saveToLibrary { id ->
                 if (id == null) snackbar("Archive failed") else snackbar("Saved to library")
             }
+        }
         }
     }
 }
