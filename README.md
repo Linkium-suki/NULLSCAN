@@ -49,8 +49,16 @@ manual crop, an encrypted archive and richer exports.
   （基于分析流的实时边缘检测 + 可拖拽四角裁剪与透视矫正）
 - **Lazarus Engine** — the exact legacy pipeline, now in Kotlin/OpenCV: HSV ink separation
   (red wraps the hue circle in two segments), per-channel illumination normalization,
-  gray-threshold stroke erase (De-Pencil / De-Ink), **OCR-zone forced recall**, USM sharpen.
-  （原版管线逐函数移植：HSV 去红蓝、光照归一化、去铅笔/去黑笔、OCR 保护区召回、USM 锐化）
+  gray-threshold stroke erase (De-Pencil / De-Ink), **OCR-zone forced recall**, USM sharpen —
+  plus v2.1 upgrades: **auto-deskew** (Hough text-line median), an **adaptive B&W** fourth
+  style, and **CLAHE low-light boost**.
+  （原版管线逐函数移植 + 2.1 升级：自动摆正、自适应黑白第四档、CLAHE 弱光增强）
+- **Cutout** (new) — one-tap **AI portrait segmentation with the model bundled in the APK**
+  (ML Kit Selfie Segmentation, ~256×256 f16 tflite, fully offline) or interactive **GrabCut**
+  over a drawn frame; feathering and transparent / white / black backgrounds; PNG export.
+  （抠图：内嵌端侧人像分割小模型一键抠人，或拖框 GrabCut 抠任意主体；支持羽化与透明/白/黑底）
+- **i18n** — full Simplified-Chinese and English resources on every screen, following the
+  system language. （全界面中英双语，跟随系统语言）
 - **OCR Protect** — ML Kit on-device Chinese OCR bounding boxes force text pixels to survive
   aggressive erase passes. （ML Kit 中文 OCR 圈定文字保护区，强力去墨不误删文字）
 
@@ -64,7 +72,9 @@ manual crop, an encrypted archive and richer exports.
 ### 🗂️ Rebuilt Experience (重制体验)
 - Material 3 UI: dynamic color, tonal surfaces, segmented controls, bottom sheets.
 - Multi-page editor with reorder / rotate / delete, tag taxonomy (23 paper tags).
-- Exports: adaptive-size **PDF** (optional watermark), **PNG/JPG** to gallery, **OCR text**.
+- Exports: adaptive-size **PDF** (optional watermark) and **OCR text saved straight to
+  Downloads/Pulse** — no share sheet (sharing kept as an explicit option), **PNG/JPG** to
+  the gallery.
 - Library with thumbnail grid and title / tag / **OCR full-text** search.
 
 ## 🛠️ Tech Stack (技术栈)
