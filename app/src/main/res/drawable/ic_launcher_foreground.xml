@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- viewfinder corners -->
+    <path
+        android:pathData="M34,31 L31,31 L31,34 M74,31 L77,31 L77,34 M77,74 L77,77 L74,77 M34,77 L31,77 L31,74"
+        android:strokeColor="#EAF0FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <!-- pulse line -->
+    <path
+        android:pathData="M25,54 L43,54 L51,38 L59,70 L67,54 L83,54"
+        android:strokeColor="#5B8CFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+</vector>

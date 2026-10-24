@@ -1,16 +1,17 @@
 <div align="center">
 
-# 📷 NULLSCAN | 零·描
+# ⚡ Pulse
 
-**Project "Pulse": High-Performance Offline CV Pipeline**
+**A High-Performance, Privacy-First Mobile Scanner — rebuilt in Kotlin + Jetpack Compose**
 <br>
 *极致离线 · 视觉重构 · 像素主权*
 
-<!-- 视觉体系：Miku绿 (#39C5BB) -->
-[![Platform](https://img.shields.io/badge/Platform-Android-39C5BB?style=for-the-badge&logo=android&logoColor=white)](https://www.android.com)
-[![Framework](https://img.shields.io/badge/Framework-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![CV_Engine](https://img.shields.io/badge/CV_Engine-OpenCV-5C2D91?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org)
+[![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://www.android.com)
+[![Framework](https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/jetpack/compose)
+[![CV_Engine](https://img.shields.io/badge/CV_Engine-OpenCV_4-5C2D91?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org)
 [![ML_Engine](https://img.shields.io/badge/ML_Engine-Google_ML_Kit-FF6F00?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/ml-kit)
+
+*Pulse is the full native rewrite of NULLSCAN — the project codename "Project Pulse" has taken over as the product name.*
 
 </div>
 
@@ -18,46 +19,69 @@
 
 ## 📖 Introduction (简介)
 
-**NULLSCAN** is a non-compromise, **100% offline** mobile scanner. 
-By combining the speed of **ML Kit** with the raw power of **OpenCV**, it delivers a hybrid vision pipeline that handles complex document scanning tasks locally on your device.
+**Pulse** is a no-compromise, **100% offline** document scanner focused on paper restoration
+(试卷还原): removing red/blue pen ink, de-penciling, illumination normalization and
+OCR-aware text protection — all computed locally on your device.
 
-**零·描** 是一款拒绝妥协的**全离线**移动端扫描工具。它完美融合了 **ML Kit** 的快速感知与 **OpenCV** 的硬核图像处理能力，构建了一套混合视觉流水线。所有像素级的计算均在本地完成，真正做到零延迟、零泄露。
+The v2.0 rewrite moves from Flutter to a fully native **Kotlin + Jetpack Compose (Material 3)**
+stack, keeps the exact Lazarus restoration pipeline, and adds a self-built camera scanner,
+manual crop, an encrypted archive and richer exports.
+
+**Pulse** 是一款拒绝妥协的**全离线**移动端扫描工具，专注纸张还原：去除红/蓝笔迹、去铅笔痕、
+光照归一化与 OCR 文字保护——全部计算在你的设备本地完成。2.0 重制版从 Flutter 迁移到原生
+**Kotlin + Jetpack Compose (Material 3)**，完整保留 Lazarus 还原管线，并新增自研相机扫描、
+手动裁剪、加密文档库与更丰富的导出能力。
 
 ---
 
 ## ✨ Features (功能亮点)
 
 ### 🧪 Hybrid CV Pipeline (混合视觉流水线)
-- **Aether Lens:** Real-time edge detection via ML Kit. (基于以太透镜的秒级边缘捕捉)
-- **OpenCV Engine:** Advanced perspective transformation and image normalization. (利用 OpenCV 实现精准的透视变换与拉直)
-- **Lazarus Filters:** Custom CV algorithms to remove noise and restore document clarity. (自研 CV 算法，深度去噪并复活陈旧文档)
+- **Aether Lens** — real-time document edge detection on the CameraX analysis stream (OpenCV
+  Canny + largest-quad contour), plus a draggable four-corner crop with perspective warp.
+  （基于分析流的实时边缘检测 + 可拖拽四角裁剪与透视矫正）
+- **Lazarus Engine** — the exact legacy pipeline, now in Kotlin/OpenCV: HSV ink separation
+  (red wraps the hue circle in two segments), per-channel illumination normalization,
+  gray-threshold stroke erase (De-Pencil / De-Ink), **OCR-zone forced recall**, USM sharpen.
+  （原版管线逐函数移植：HSV 去红蓝、光照归一化、去铅笔/去黑笔、OCR 保护区召回、USM 锐化）
+- **OCR Protect** — ML Kit on-device Chinese OCR bounding boxes force text pixels to survive
+  aggressive erase passes. （ML Kit 中文 OCR 圈定文字保护区，强力去墨不误删文字）
 
 ### 🛡️ Absolute Privacy (绝对隐私)
-- **Air-gapped by Design:** The app does not even request the `INTERNET` permission. (原生不申请网络权限，实现物理级隔离)
-- **Zero-Metadata:** We process images, not your identity. (我们只处理像素，不触碰元数据)
+- **Air-gapped by design** — the app does not request the `INTERNET` permission. Not even once.
+  （原生不申请网络权限，实现物理级隔离）
+- **Encrypted archive** — saved documents are AES-256-GCM encrypted with an Android Keystore
+  key, unlockable behind BiometricPrompt. （文档库 Keystore 加密 + 生物识别锁）
+- **Zero-Metadata** — we process images, not your identity. （只处理像素，不触碰元数据）
 
----
+### 🗂️ Rebuilt Experience (重制体验)
+- Material 3 UI: dynamic color, tonal surfaces, segmented controls, bottom sheets.
+- Multi-page editor with reorder / rotate / delete, tag taxonomy (23 paper tags).
+- Exports: adaptive-size **PDF** (optional watermark), **PNG/JPG** to gallery, **OCR text**.
+- Library with thumbnail grid and title / tag / **OCR full-text** search.
 
 ## 🛠️ Tech Stack (技术栈)
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Framework** | ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat-square&logo=flutter) | High-performance UI with Impeller hardware acceleration. |
-| **Computer Vision** | ![OpenCV](https://img.shields.io/badge/-OpenCV-5C2D91?style=flat-square&logo=opencv) | C++ powered image processing for high-precision warping. |
-| **Machine Learning** | ![MLKit](https://img.shields.io/badge/-Google_ML_Kit-FF6F00?style=flat-square&logo=google) | On-device lightweight models for rapid object detection. |
-| **I/O & FFI** | ![Dart](https://img.shields.io/badge/-Dart_FFI-0175C2?style=flat-square&logo=dart) | Bridging Flutter with high-speed C++/Native libraries. |
+| Component | Technology |
+| :--- | :--- |
+| **UI** | Kotlin · Jetpack Compose · Material 3 (dynamic color) |
+| **Computer Vision** | OpenCV 4 (`org.opencv:opencv` AAR) |
+| **Machine Learning** | ML Kit Text Recognition — Chinese (bundled, offline model) |
+| **Camera** | CameraX (Preview / ImageAnalysis / ImageCapture) |
+| **Storage** | Room + DataStore · Android Keystore (AES-256-GCM) |
 
----
+## 🚀 Build (构建)
 
-## 🚀 How to Run (使用方法)
+```bash
+# Requires JDK 17 + Android SDK (minSdk 26 / target 35)
+./gradlew assembleDebug
+```
 
-### Download (下载)
-Grab the latest verified APK from the **GitHub Releases**. 
-拒绝任何形式的中间商，请从官方 **Releases** 频道获取安装包：
+Open the project in Android Studio, or run on-device:
 
-👉 [**Go to Releases**](https://github.com/Linkium-suki/NULLSCAN/releases)
-
----
+```bash
+./gradlew installDebug
+```
 
 ## 📄 License
 
@@ -70,6 +94,6 @@ Licensed under **Apache License 2.0**.
 
 *Project Pulse: Refactoring the world, one pixel at a time.*
 <br>
-*Made with ❤️ by [Linkium](https://github.com/Linkium-suki)*
+*Rewritten with ❤️ in Kotlin — successor of [NULLSCAN](https://github.com/Linkium-suki/NULLSCAN)*
 
 </div>
