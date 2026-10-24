@@ -9,6 +9,7 @@ lifecycle = "2.8.7"
 navigationCompose = "2.8.5"
 camerax = "1.4.1"
 mlkitTextChinese = "16.0.1"
+gmsDocScanner = "16.0.0-beta1"
 opencv = "4.10.0"
 room = "2.7.2"
 datastore = "1.1.1"
@@ -37,6 +38,7 @@ camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 mlkit-text-chinese = { group = "com.google.mlkit", name = "text-recognition-chinese", version.ref = "mlkitTextChinese" }
+gms-document-scanner = { group = "com.google.android.gms", name = "play-services-mlkit-document-scanner", version.ref = "gmsDocScanner" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

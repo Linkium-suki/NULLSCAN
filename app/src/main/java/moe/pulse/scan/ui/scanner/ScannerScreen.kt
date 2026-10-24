@@ -1,9 +1,11 @@
 package moe.pulse.scan.ui.scanner
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.PointF
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -14,6 +16,9 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,7 +64,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.io.File
 import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import moe.pulse.scan.core.data.PageRef
 import moe.pulse.scan.core.data.ScanSession
 import moe.pulse.scan.core.engine.Transform
 import moe.pulse.scan.core.sensor.StabilityMonitor
@@ -134,11 +143,60 @@ fun ScannerScreen(
 
     val previewView = remember { PreviewView(context).apply { implementationMode = PreviewView.ImplementationMode.COMPATIBLE } }
 
+    // Default scan path: Google's Play-services document scanner (auto crop,
+    // multi-page). It is a Dynamite module inside GMS Core — never bundled in
+    // the APK — so availability depends on the device and the module is
+    // fetched by GMS Core itself; this app still needs no INTERNET permission.
+    // If it is unavailable or cancelled, the manual viewfinder below remains.
+    val gmsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                val uris = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                    ?.pages?.map { it.imageUri }
+                if (!uris.isNullOrEmpty()) {
+                    scope.launch(Dispatchers.IO) {
+                        File(context.cacheDir, "pages").mkdirs()
+                        uris.forEach { uri ->
+                            val f = File(context.cacheDir, "pages/gms_${System.nanoTime()}.jpg")
+                            context.contentResolver.openInputStream(uri)?.use { input ->
+                                f.outputStream().use { input.copyTo(it) }
+                            }
+                            if (f.length() > 0) ScanSession.pages += PageRef(f)
+                        }
+                        withContext(Dispatchers.Main) { onImported() }
+                    }
+                }
+            }
+            // Any other code (module failure / cancel) — stay on the manual viewfinder.
+        }
+    }
+
+    fun launchGmsScan() {
+        val activity = context as? Activity ?: return
+        val options = GmsDocumentScannerOptions.Builder()
+            .setGalleryImportAllowed(true)
+            .setPageLimit(20)
+            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+            .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+            .build()
+        GmsDocumentScanning.getClient(options)
+            .getStartScanIntent(activity)
+            .addOnSuccessListener { sender ->
+                gmsLauncher.launch(IntentSenderRequest.Builder(sender).build())
+            }
+            .addOnFailureListener {
+                // GMS unavailable / module not ready — manual viewfinder is the fallback.
+            }
+    }
+
     LaunchedEffect(hasPermission) {
         if (!hasPermission) return@LaunchedEffect
         // Capture/import outputs live under cache/pages; create it up front so
         // ImageCapture's file writer never fails on a missing parent.
         File(context.cacheDir, "pages").mkdirs()
+        launchGmsScan()
         val future = ProcessCameraProvider.getInstance(context)
         val provider = kotlinx.coroutines.suspendCancellableCoroutine<ProcessCameraProvider> { cont ->
             future.addListener(
@@ -208,6 +266,16 @@ fun ScannerScreen(
         }
 
         // Stability status chip
+        FilledIconButton(
+            onClick = { launchGmsScan() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 48.dp)
+                .size(48.dp),
+        ) {
+            Icon(Icons.Filled.DocumentScanner, contentDescription = "System scanner")
+        }
+
         Surface(
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp),
             shape = CircleShape,

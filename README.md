@@ -37,6 +37,13 @@ manual crop, an encrypted archive and richer exports.
 ## ✨ Features (功能亮点)
 
 ### 🧪 Hybrid CV Pipeline (混合视觉流水线)
+- **Default scan path: Google Document Scanner** — when Google Play services is available,
+  Pulse launches the system scanner UI (auto-capture, auto-crop, multi-page). The scanner is
+  a Play-services Dynamite module, **not bundled into the APK**; Pulse itself still holds no
+  INTERNET permission (module delivery is GMS Core's own channel). Unavailable / cancelled /
+  offline? Pulse falls back seamlessly to its built-in manual scanner.
+  （默认走 Google 系统扫描器：自动拍摄/裁剪/多页。扫描模块由 GMS Core 按需分发、不打入
+  APK；本应用依旧不申请 INTERNET 权限。GMS 不可用或用户取消时无缝回退自研扫描页。）
 - **Aether Lens** — real-time document edge detection on the CameraX analysis stream (OpenCV
   Canny + largest-quad contour), plus a draggable four-corner crop with perspective warp.
   （基于分析流的实时边缘检测 + 可拖拽四角裁剪与透视矫正）

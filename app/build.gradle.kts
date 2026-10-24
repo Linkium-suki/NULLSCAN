@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.camerax.view)
 
     implementation(libs.mlkit.text.chinese)
+    implementation(libs.gms.document.scanner)
     implementation(libs.opencv)
 
     implementation(libs.room.runtime)

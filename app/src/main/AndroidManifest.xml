@@ -21,6 +21,13 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- Package visibility (Android 11+): the document-scanner API binds to
+         Google Play services; without this query the availability check fails
+         on devices that do have GMS. -->
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
+
     <application
         android:name=".PulseApp"
         android:allowBackup="false"
