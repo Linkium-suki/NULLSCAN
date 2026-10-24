@@ -28,6 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import moe.pulse.scan.PulseApp
 import moe.pulse.scan.core.data.PulseSettings
+import androidx.compose.ui.res.stringResource
+import moe.pulse.scan.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,10 +42,10 @@ fun SettingsScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_cd))
                     }
                 },
             )
@@ -56,8 +58,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState()),
         ) {
             ListItem(
-                headlineContent = { Text("Archive lock") },
-                supportingContent = { Text("Require biometrics or device credential on launch") },
+                headlineContent = { Text(stringResource(R.string.archive_lock)) },
+                supportingContent = { Text(stringResource(R.string.archive_lock_sub)) },
                 trailingContent = {
                     Switch(
                         checked = settings.biometricLock,
@@ -66,8 +68,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                 },
             )
             ListItem(
-                headlineContent = { Text("PDF watermark") },
-                supportingContent = { Text("Stamp “PAGE n | PULSE” on exported pages") },
+                headlineContent = { Text(stringResource(R.string.pdf_watermark_title)) },
+                supportingContent = { Text(stringResource(R.string.pdf_watermark_sub)) },
                 trailingContent = {
                     Switch(
                         checked = settings.watermark,
@@ -77,8 +79,8 @@ fun SettingsScreen(onBack: () -> Unit) {
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ListItem(
-                    headlineContent = { Text("Dynamic color") },
-                    supportingContent = { Text("Follow Material You wallpaper palette") },
+                    headlineContent = { Text(stringResource(R.string.dynamic_color)) },
+                    supportingContent = { Text(stringResource(R.string.dynamic_color_sub)) },
                     trailingContent = {
                         Switch(
                             checked = settings.dynamicColor,
@@ -89,15 +91,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             }
 
             Text(
-                "Pulse 2.0.0",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            )
-            Text(
-                "Air-gapped by design — Pulse never requests the INTERNET permission. " +
-                    "OpenCV restoration and ML Kit OCR run entirely on-device. " +
-                    "Pages saved to the archive are AES-256-GCM encrypted with a Keystore key. " +
-                    "Licensed under Apache-2.0.",
+                stringResource(R.string.about_body),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier

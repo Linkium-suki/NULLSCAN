@@ -88,6 +88,30 @@ object DocumentExporter {
         }
     }
 
+    /**
+     * Saves an arbitrary file (PDF / TXT / …) straight into the user-visible
+     * Downloads/Pulse folder — no share sheet involved. Pre-Q falls back to
+     * the app's external Downloads dir.
+     */
+    fun saveToDownloads(context: Context, bytes: ByteArray, displayName: String, mime: String): Uri? {
+        val resolver = context.contentResolver
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, displayName)
+                put(MediaStore.Downloads.MIME_TYPE, mime)
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Pulse")
+            }
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return null
+            resolver.openOutputStream(uri)?.use { it.write(bytes) }
+            return uri
+        } else {
+            val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "Pulse").apply { mkdirs() }
+            val file = File(dir, displayName)
+            file.writeBytes(bytes)
+            return Uri.fromFile(file)
+        }
+    }
+
     fun shareFile(context: Context, file: File, mime: String) {
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
         val intent = Intent(Intent.ACTION_SEND).apply {

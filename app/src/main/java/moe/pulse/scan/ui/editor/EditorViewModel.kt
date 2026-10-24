@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import moe.pulse.scan.R
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +30,9 @@ import moe.pulse.scan.core.engine.LazarusEngine
 import moe.pulse.scan.core.export.DocumentExporter
 import moe.pulse.scan.core.ocr.OcrProvider
 import moe.pulse.scan.core.ocr.OcrResult
+
+/** UI status text: resource id + optional format args, localized at render time. */
+data class StatusMessage(@androidx.annotation.StringRes val res: Int, val args: List<Any> = emptyList())
 
 class EditorViewModel(application: Application, private val docKey: String) :
     AndroidViewModel(application) {
@@ -56,12 +60,14 @@ class EditorViewModel(application: Application, private val docKey: String) :
     var ocrProtect by mutableStateOf(true)
     var removeRed by mutableStateOf(true)
     var removeBlue by mutableStateOf(true)
-    var style by mutableIntStateOf(1) // 0 original / 1 de-pencil / 2 de-ink
+    var style by mutableIntStateOf(1) // 0 original / 1 de-pencil / 2 de-ink / 3 b&w
+    var deskew by mutableStateOf(false)
+    var enhanceLowLight by mutableStateOf(false)
     val selectedTags = mutableStateListOf<String>()
 
     var pageLoading by mutableStateOf(true)
     var exporting by mutableStateOf(false)
-    var statusMessage by mutableStateOf<String?>(null)
+    var statusMessage by mutableStateOf<StatusMessage?>(null)
         private set
     var savedDocumentId by mutableStateOf<Long?>(null)
 
@@ -107,7 +113,7 @@ class EditorViewModel(application: Application, private val docKey: String) :
             return
         }
         pageLoading = true
-        statusMessage = "LOADING…"
+        statusMessage = StatusMessage(R.string.loading)
         viewModelScope.launch {
             try {
                 ensureOriginal(index)
@@ -151,7 +157,7 @@ class EditorViewModel(application: Application, private val docKey: String) :
             if (index !in pages.indices) return
             if (!exporting) {
                 pageLoading = true
-                statusMessage = "PROCESSING…"
+                statusMessage = StatusMessage(R.string.processing)
             }
             try {
                 ensureOriginal(index)
@@ -169,6 +175,8 @@ class EditorViewModel(application: Application, private val docKey: String) :
                             removeRed = removeRed,
                             removeBlue = removeBlue,
                             style = style,
+                            deskew = deskew,
+                            enhanceLowLight = enhanceLowLight,
                         ),
                     )
                 }
@@ -247,6 +255,29 @@ class EditorViewModel(application: Application, private val docKey: String) :
         }
     }
 
+    /** Stages the current page (processed + rotated) for the cutout screen. */
+    fun prepareCutout(onReady: () -> Unit) {
+        val index = currentIndex
+        if (index !in pages.indices || exporting) return
+        viewModelScope.launch {
+            val file = withContext(Dispatchers.IO) {
+                try {
+                    val bytes = bytesForExport(index)
+                    if (bytes != null) {
+                        val rotated = applyRotation(bytes, pages[index].rotation)
+                        val f = File(app.cacheDir, "pages/cutout_src_${System.nanoTime()}.jpg")
+                        f.writeBytes(rotated)
+                        ScanSession.pendingCutout = f
+                        f
+                    } else null
+                } catch (_: Exception) {
+                    null
+                }
+            }
+            if (file != null) onReady()
+        }
+    }
+
     private fun clearCaches() {
         originalCache.clear()
         processedCache.clear()
@@ -270,7 +301,14 @@ class EditorViewModel(application: Application, private val docKey: String) :
         return withContext(Dispatchers.Default) {
             LazarusEngine.process(
                 originalCache.getValue(index),
-                LazarusEngine.Params(zones, removeRed, removeBlue, style),
+                LazarusEngine.Params(
+                    protectedZones = zones,
+                    removeRed = removeRed,
+                    removeBlue = removeBlue,
+                    style = style,
+                    deskew = deskew,
+                    enhanceLowLight = enhanceLowLight,
+                ),
             )
         }.also { processedCache[index] = it }
     }
@@ -287,24 +325,63 @@ class EditorViewModel(application: Application, private val docKey: String) :
         return out.toByteArray()
     }
 
-    fun exportPdf(watermark: Boolean, onResult: (File?) -> Unit) {
+    /** Renders all pages and hands the PDF bytes to the callback. */
+    private suspend fun renderPdf(watermark: Boolean): Pair<String, ByteArray>? {
+        val rendered = ArrayList<ByteArray>(pages.size)
+        for (i in pages.indices) {
+            statusMessage = StatusMessage(R.string.processing_page_n, listOf(i + 1, pages.size))
+            val bytes = bytesForExport(i)
+            if (bytes != null) rendered += applyRotation(bytes, pages[i].rotation)
+        }
+        if (rendered.isEmpty()) return null
+        val name = DocumentExporter.generateFileName(selectedTags.toSet(), "pdf")
+        val bytes = withContext(Dispatchers.IO) {
+            val tmp = File(DocumentExporter.ensureExportDir(app, "pdf"), name)
+            DocumentExporter.exportPdf(app, rendered, tmp, watermark)
+            val data = tmp.readBytes()
+            tmp.delete()
+            data
+        }
+        return name to bytes
+    }
+
+    /** Saves the PDF straight into Downloads/Pulse — no share sheet. */
+    fun savePdf(watermark: Boolean, onResult: (Boolean) -> Unit) {
         if (exporting) return
         exporting = true
-        statusMessage = "BATCH PROCESSING…"
+        statusMessage = StatusMessage(R.string.batch_processing)
+        viewModelScope.launch {
+            var ok = false
+            try {
+                renderPdf(watermark)?.let { (name, bytes) ->
+                    ok = withContext(Dispatchers.IO) {
+                        DocumentExporter.saveToDownloads(app, bytes, name, "application/pdf") != null
+                    }
+                }
+            } catch (_: Exception) {
+                ok = false
+            } finally {
+                exporting = false
+                statusMessage = null
+                onResult(ok)
+            }
+        }
+    }
+
+    /** Optional secondary path: generate the PDF and share it. */
+    fun sharePdf(watermark: Boolean, onResult: (File?) -> Unit) {
+        if (exporting) return
+        exporting = true
+        statusMessage = StatusMessage(R.string.batch_processing)
         viewModelScope.launch {
             var result: File? = null
             try {
-                val rendered = ArrayList<ByteArray>(pages.size)
-                for (i in pages.indices) {
-                    statusMessage = "PROCESSING PAGE ${i + 1}/${pages.size}"
-                    val bytes = bytesForExport(i)
-                    if (bytes != null) rendered += applyRotation(bytes, pages[i].rotation)
-                }
-                if (rendered.isNotEmpty()) {
-                    val name = DocumentExporter.generateFileName(selectedTags.toSet(), "pdf")
-                    val out = File(DocumentExporter.ensureExportDir(app, "pdf"), name)
-                    withContext(Dispatchers.IO) { DocumentExporter.exportPdf(app, rendered, out, watermark) }
-                    result = out
+                renderPdf(watermark)?.let { (name, bytes) ->
+                    result = withContext(Dispatchers.IO) {
+                        val out = File(DocumentExporter.ensureExportDir(app, "pdf"), name)
+                        out.writeBytes(bytes)
+                        out
+                    }
                 }
             } catch (_: Exception) {
                 result = null
@@ -320,7 +397,7 @@ class EditorViewModel(application: Application, private val docKey: String) :
         val index = currentIndex
         if (index !in pages.indices || exporting) return
         exporting = true
-        statusMessage = "PROCESSING…"
+        statusMessage = StatusMessage(R.string.processing)
         viewModelScope.launch {
             var uri: Uri? = null
             try {
@@ -342,13 +419,14 @@ class EditorViewModel(application: Application, private val docKey: String) :
         }
     }
 
-    fun exportOcrText(onResult: (File?) -> Unit) {
+    /** Saves the current page's OCR text straight into Downloads/Pulse. */
+    fun saveOcrText(onResult: (Boolean) -> Unit) {
         val index = currentIndex
         if (index !in pages.indices || exporting) return
         exporting = true
-        statusMessage = "OCR…"
+        statusMessage = StatusMessage(R.string.ocr_running)
         viewModelScope.launch {
-            var file: File? = null
+            var ok = false
             try {
                 ensureOriginal(index)
                 val text = ocrCache.getOrPut(index) {
@@ -356,15 +434,16 @@ class EditorViewModel(application: Application, private val docKey: String) :
                 }.fullText
                 if (text.isNotBlank()) {
                     val name = DocumentExporter.generateFileName(selectedTags.toSet(), "txt")
-                    val out = File(DocumentExporter.ensureExportDir(app, "txt"), name)
-                    file = withContext(Dispatchers.IO) { DocumentExporter.writeTextFile(out, text) }
+                    ok = withContext(Dispatchers.IO) {
+                        DocumentExporter.saveToDownloads(app, text.toByteArray(Charsets.UTF_8), name, "text/plain") != null
+                    }
                 }
             } catch (_: Exception) {
-                file = null
+                ok = false
             } finally {
                 exporting = false
                 statusMessage = null
-                onResult(file)
+                onResult(ok)
             }
         }
     }
@@ -372,7 +451,7 @@ class EditorViewModel(application: Application, private val docKey: String) :
     fun saveToLibrary(onDone: (Long?) -> Unit) {
         if (exporting) return
         exporting = true
-        statusMessage = "ARCHIVING…"
+        statusMessage = StatusMessage(R.string.archiving)
         viewModelScope.launch {
             var docId: Long? = null
             try {
@@ -380,7 +459,7 @@ class EditorViewModel(application: Application, private val docKey: String) :
                 val renderedPages = ArrayList<ByteArray>(pages.size)
                 val ocrTexts = StringBuilder()
                 for (i in pages.indices) {
-                    statusMessage = "ARCHIVING PAGE ${i + 1}/${pages.size}"
+                    statusMessage = StatusMessage(R.string.archiving_page_n, listOf(i + 1, pages.size))
                     bytesForExport(i)?.let { renderedPages += applyRotation(it, pages[i].rotation) }
                     try {
                         ensureOriginal(i)

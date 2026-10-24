@@ -58,6 +58,8 @@ import moe.pulse.scan.PulseApp
 import moe.pulse.scan.core.data.DocumentEntity
 import moe.pulse.scan.core.data.PulseSettings
 import moe.pulse.scan.ui.common.rememberToast
+import androidx.compose.ui.res.stringResource
+import moe.pulse.scan.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,8 +102,8 @@ fun LibraryScreen(
             },
         )
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Unlock Pulse")
-            .setSubtitle("Your archive is protected")
+            .setTitle(context.getString(R.string.locked_title))
+            .setSubtitle(context.getString(R.string.archive_lock_sub))
             .setAllowedAuthenticators(
                 BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL
             )
@@ -116,8 +118,8 @@ fun LibraryScreen(
     pendingDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { pendingDelete = null },
-            title = { Text("Delete document?") },
-            text = { Text("“${doc.title}” and its ${doc.pageCount} encrypted pages will be removed permanently.") },
+            title = { Text(stringResource(R.string.delete_dialog_title)) },
+            text = { Text(stringResource(R.string.delete_dialog_message, doc.title, doc.pageCount)) },
             confirmButton = {
                 TextButton(onClick = {
                     val target = doc
@@ -125,28 +127,28 @@ fun LibraryScreen(
                     scope.launch {
                         app.database.archiveDao().pagesOf(target.id).forEach { File(it.path).delete() }
                         app.database.archiveDao().deleteDocument(target.id)
-                        toast("Deleted")
+                        toast(context.getString(R.string.deleted_toast))
                     }
-                }) { Text("Delete") }
+                }) { Text(stringResource(R.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pulse") },
+                title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                        Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings_cd))
                     }
                 },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onScan) {
-                Icon(Icons.Filled.DocumentScanner, contentDescription = "Scan")
+                Icon(Icons.Filled.DocumentScanner, contentDescription = stringResource(R.string.scan_cd))
             }
         },
     ) { padding ->
@@ -160,7 +162,7 @@ fun LibraryScreen(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search title, tags, OCR text…") },
+                placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
                 shape = MaterialTheme.shapes.extraLarge,
@@ -171,8 +173,8 @@ fun LibraryScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.height(48.dp))
-                        Text("Archive locked", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 12.dp))
-                        Button(onClick = { runUnlockPrompt() }) { Text("Unlock") }
+                        Text(stringResource(R.string.locked_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 12.dp))
+                        Button(onClick = { runUnlockPrompt() }) { Text(stringResource(R.string.unlock_action)) }
                     }
                 }
             } else if (docs.isEmpty() && query.isBlank()) {
@@ -184,12 +186,15 @@ fun LibraryScreen(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.height(56.dp),
                         )
-                        Text("Nothing scanned yet", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 16.dp))
+                        Text(stringResource(R.string.empty_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 16.dp))
                         Text(
-                            "Tap the scanner to capture or import paper.",
+                            stringResource(R.string.empty_subtitle),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        Button(onClick = onScan, modifier = Modifier.padding(top = 16.dp)) {
+                            Text(stringResource(R.string.scan_cd))
+                        }
                     }
                 }
             } else {
@@ -262,7 +267,7 @@ private fun DocumentCard(
                     IconButton(onClick = onDelete) {
                         Icon(
                             Icons.Filled.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.delete_cd),
                             tint = MaterialTheme.colorScheme.error,
                         )
                     }

@@ -12,11 +12,14 @@ data class PageRef(val file: File)
 object ScanSession {
     val pages = mutableListOf<PageRef>()
     var pendingCrop: File? = null
+    var pendingCutout: File? = null
 
     fun clear() {
         pages.forEach { it.file.delete() }
         pages.clear()
         pendingCrop?.delete()
         pendingCrop = null
+        pendingCutout?.delete()
+        pendingCutout = null
     }
 }

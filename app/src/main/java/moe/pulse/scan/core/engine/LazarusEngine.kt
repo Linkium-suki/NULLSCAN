@@ -34,14 +34,36 @@ object LazarusEngine {
         val protectedZones: List<RectF> = emptyList(),
         val removeRed: Boolean = true,
         val removeBlue: Boolean = true,
+        /** 0 original, 1 de-pencil, 2 de-ink, 3 adaptive black & white. */
         val style: Int = 1,
+        val deskew: Boolean = false,
+        val enhanceLowLight: Boolean = false,
     )
 
     fun process(imageBytes: ByteArray, params: Params): ByteArray {
-        val src = decode(imageBytes) ?: return imageBytes
+        var src = decode(imageBytes) ?: return imageBytes
         val hsv = Mat()
         val masks = mutableListOf<Mat>()
         try {
+            // 1.5 deskew (optional): straighten the page by its median text-line angle
+            if (params.deskew) {
+                val angle = Transform.estimateSkewAngle(src)
+                if (Math.abs(angle) >= 0.3 && Math.abs(angle) <= 15.0) {
+                    val rot = Imgproc.getRotationMatrix2D(
+                        Point(src.cols() / 2.0, src.rows() / 2.0), angle, 1.0
+                    )
+                    val rotated = Mat()
+                    Imgproc.warpAffine(
+                        src, rotated, rot, src.size(),
+                        Imgproc.INTER_CUBIC, Core.BORDER_REPLICATE
+                    )
+                    rot.release()
+                    val old = src
+                    src = rotated
+                    old.release()
+                }
+            }
+
             // 2. ink separation
             Imgproc.cvtColor(src, hsv, Imgproc.COLOR_BGR2HSV)
             if (params.removeRed) {
@@ -78,8 +100,30 @@ object LazarusEngine {
             Core.merge(channels, src)
             channels.forEach { it.release() }
 
+            // 3.5 low-light boost (optional): CLAHE on the L channel of Lab
+            if (params.enhanceLowLight) {
+                val lab = Mat()
+                try {
+                    Imgproc.cvtColor(src, lab, Imgproc.COLOR_BGR2Lab)
+                    val labChans = mutableListOf<Mat>()
+                    Core.split(lab, labChans)
+                    val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
+                    clahe.apply(labChans[0], labChans[0])
+                    Core.merge(labChans, lab)
+                    labChans.forEach { it.release() }
+                    lab.copyTo(src)
+                } finally {
+                    lab.release()
+                }
+            }
+
             if (params.style == 0) {
                 return encode(src) ?: imageBytes
+            }
+
+            if (params.style == 3) {
+                val bw = adaptiveBinary(src, params)
+                return try { encode(bw) ?: imageBytes } finally { bw.release() }
             }
 
             // 4. stroke erase system
@@ -145,6 +189,48 @@ object LazarusEngine {
             hsv.release()
             masks.forEach { it.release() }
             src.release()
+        }
+    }
+
+    /** Style 3: adaptive binary — clean white paper, ink-black text; OCR zones recalled. */
+    private fun adaptiveBinary(src: Mat, params: Params): Mat {
+        val gray = Mat()
+        val bw = Mat()
+        val out = Mat()
+        try {
+            Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY)
+            var block = Math.round(Math.min(src.cols(), src.rows()) / 20.0).toInt()
+            if (block % 2 == 0) block++
+            if (block < 15) block = 15
+            Imgproc.adaptiveThreshold(
+                gray, bw, 255.0,
+                Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, block, 15.0
+            )
+            // OCR zone recall: force dark text pixels inside protected zones back to ink
+            for (zone in params.protectedZones) {
+                var x = zone.left.toInt().coerceIn(0, bw.cols() - 1)
+                var y = zone.top.toInt().coerceIn(0, bw.rows() - 1)
+                var w = zone.width().toInt()
+                var h = zone.height().toInt()
+                if (x + w > bw.cols()) w = bw.cols() - x
+                if (y + h > bw.rows()) h = bw.rows() - y
+                if (w > 0 && h > 0) {
+                    val rect = org.opencv.core.Rect(x, y, w, h)
+                    val grayRoi = gray.submat(rect)
+                    val textRoi = Mat()
+                    Imgproc.threshold(grayRoi, textRoi, 200.0, 255.0, Imgproc.THRESH_BINARY_INV)
+                    val bwRoi = bw.submat(rect)
+                    bwRoi.setTo(Scalar(0.0), textRoi)
+                    bwRoi.release()
+                    textRoi.release()
+                    grayRoi.release()
+                }
+            }
+            Imgproc.cvtColor(bw, out, Imgproc.COLOR_GRAY2BGR)
+            return out
+        } finally {
+            gray.release()
+            bw.release()
         }
     }
 

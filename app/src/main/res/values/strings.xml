@@ -2,4 +2,156 @@
 <resources>
     <string name="app_name">Pulse</string>
     <string name="share_via">Share via</string>
+
+    <!-- Library -->
+    <string name="search_hint">Search title, tags, OCR text…</string>
+    <string name="empty_title">Nothing scanned yet</string>
+    <string name="empty_subtitle">Tap the scanner to capture or import paper.</string>
+    <string name="scan_cd">Scan</string>
+    <string name="settings_cd">Settings</string>
+    <string name="delete_cd">Delete document</string>
+    <string name="delete_dialog_title">Delete document?</string>
+    <string name="delete_dialog_message">“%1$s” and its %2$d encrypted page(s) will be removed permanently.</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="deleted_toast">Deleted</string>
+    <string name="locked_title">Archive locked</string>
+    <string name="unlock_action">Unlock</string>
+
+    <!-- Scanner -->
+    <string name="status_ready">SYSTEM READY</string>
+    <string name="status_unstable">STABILIZE DEVICE</string>
+    <string name="import_cd">Import from gallery</string>
+    <string name="capture_cd">Capture</string>
+    <string name="system_scanner_cd">System scanner</string>
+    <string name="camera_denied">Camera permission was denied</string>
+    <string name="camera_requesting">Requesting camera…</string>
+    <string name="grant_camera">Grant camera access</string>
+    <string name="importing">Importing…</string>
+    <string name="gms_fallback_toast">System scanner unavailable — using manual camera</string>
+    <string name="pages_count">%1$d</string>
+
+    <!-- Crop -->
+    <string name="crop_title">Adjust corners</string>
+    <string name="back_cd">Back</string>
+    <string name="autodetect_cd">Auto-detect edges</string>
+    <string name="crop_source_cd">Crop source</string>
+    <string name="add_to_document">Add to document</string>
+    <string name="processing">Processing…</string>
+
+    <!-- Editor -->
+    <string name="page_of">PAGE %1$d OF %2$d</string>
+    <string name="page_short">PAGE %1$d OF %2$d</string>
+    <string name="back_to_library_cd">Back to library</string>
+    <string name="add_pages_cd">Add pages</string>
+    <string name="export_cd">Export</string>
+    <string name="engine_badge_on">PULSE: ON</string>
+    <string name="engine_badge_off">ORIGINAL</string>
+    <string name="engine_label">ENGINE</string>
+    <string name="ocr_protect_label">OCR PROTECT</string>
+    <string name="deskew_label">AUTO STRAIGHTEN</string>
+    <string name="enhance_label">LOW-LIGHT BOOST</string>
+    <string name="filter_label">FILTER</string>
+    <string name="filter_red">RED</string>
+    <string name="filter_blue">BLUE</string>
+    <string name="style_label">STYLE</string>
+    <string name="style_original">Original</string>
+    <string name="style_depencil">De-Pencil</string>
+    <string name="style_deink">De-Ink</string>
+    <string name="style_bw">B&amp;W</string>
+    <string name="op_rotate">Rotate</string>
+    <string name="op_move_up">Move up</string>
+    <string name="op_move_down">Move down</string>
+    <string name="op_cutout">Cutout</string>
+    <string name="op_delete">Delete</string>
+    <string name="rotate_cd">Rotate page</string>
+    <string name="move_up_cd">Move page up</string>
+    <string name="move_down_cd">Move page down</string>
+    <string name="cutout_cd">Cutout subject</string>
+    <string name="delete_page_cd">Delete page</string>
+    <string name="page_cd">Page %1$d</string>
+    <string name="footer_powered">POWERED BY PULSE ENGINE</string>
+    <string name="batch_processing">BATCH PROCESSING…</string>
+    <string name="processing_page_n">PROCESSING PAGE %1$d OF %2$d</string>
+    <string name="loading">LOADING…</string>
+    <string name="ocr_running">OCR…</string>
+    <string name="archiving">ARCHIVING…</string>
+    <string name="archiving_page_n">ARCHIVING PAGE %1$d OF %2$d</string>
+
+    <!-- Export sheet -->
+    <string name="export_title">Export</string>
+    <string name="export_pdf">Save PDF</string>
+    <string name="export_pdf_sub">Downloads/Pulse · PS_ file name</string>
+    <string name="pdf_watermark">PDF watermark</string>
+    <string name="share_pdf">Share PDF</string>
+    <string name="share_pdf_sub">Via the system share sheet</string>
+    <string name="save_page_png">Save page as PNG</string>
+    <string name="save_page_jpg">Save page as JPG</string>
+    <string name="save_gallery_sub">Pictures/Pulse</string>
+    <string name="export_ocr_text">Export OCR text</string>
+    <string name="export_ocr_sub">Current page, block order · Downloads/Pulse</string>
+    <string name="save_to_library">Save to library</string>
+    <string name="save_to_library_sub">AES-256-GCM encrypted</string>
+    <string name="saved_toast">Saved to Downloads/Pulse</string>
+    <string name="save_failed_toast">Save failed</string>
+    <string name="no_text_toast">No text recognized</string>
+    <string name="archived_toast">Saved to library</string>
+    <string name="archive_failed_toast">Archive failed</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="archive_lock">Archive lock</string>
+    <string name="archive_lock_sub">Require biometrics or device credential on launch</string>
+    <string name="pdf_watermark_title">PDF watermark</string>
+    <string name="pdf_watermark_sub">Stamp “PAGE n | PULSE” on exported pages</string>
+    <string name="dynamic_color">Dynamic color</string>
+    <string name="dynamic_color_sub">Follow Material You wallpaper palette</string>
+    <string name="about_body">Pulse 2.1.0 — Air-gapped by design: Pulse never requests the INTERNET permission. OpenCV restoration and ML Kit OCR run entirely on-device. Pages saved to the archive are AES-256-GCM encrypted with a Keystore key. Licensed under Apache-2.0.</string>
+
+    <!-- Cutout -->
+    <string name="cutout_title">Cutout</string>
+    <string name="cutout_mode_ai">Portrait (AI)</string>
+    <string name="cutout_mode_ai_sub">On-device person segmentation model</string>
+    <string name="cutout_mode_grabcut">Subject (frame)</string>
+    <string name="cutout_mode_grabcut_sub">Drag a rectangle around the subject, then run GrabCut</string>
+    <string name="cutout_drag_hint">Drag on the photo to draw the subject box</string>
+    <string name="cutout_run">Run cutout</string>
+    <string name="cutout_feather">Feather</string>
+    <string name="cutout_background">Background</string>
+    <string name="bg_transparent">Transparent</string>
+    <string name="bg_white">White</string>
+    <string name="bg_black">Black</string>
+    <string name="cutout_apply">Save cutout PNG</string>
+    <string name="cutout_running">Segmenting…</string>
+    <string name="cutout_no_subject_toast">No subject found — try a tighter box</string>
+    <string name="cutout_saved_toast">Cutout saved to Pictures/Pulse</string>
+    <string name="cutout_failed_toast">Cutout failed</string>
+    <string name="cutout_redraw">Reset box</string>
+
+    <!-- Tags -->
+    <string-array name="tags">
+        <item>Chinese</item>
+        <item>Math</item>
+        <item>English</item>
+        <item>Physics</item>
+        <item>Chemistry</item>
+        <item>Biology</item>
+        <item>History</item>
+        <item>Geography</item>
+        <item>Politics</item>
+        <item>IT</item>
+        <item>General</item>
+        <item>G7</item>
+        <item>G8</item>
+        <item>G9</item>
+        <item>G10</item>
+        <item>G11</item>
+        <item>G12</item>
+        <item>Exam</item>
+        <item>Notes</item>
+        <item>Mistakes</item>
+        <item>Answers</item>
+        <item>Mock I</item>
+        <item>Mock II</item>
+    </string-array>
 </resources>

@@ -9,7 +9,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -29,7 +29,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.SaveAlt
+import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,9 +63,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,8 +75,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.launch
 import moe.pulse.scan.PulseApp
+import moe.pulse.scan.R
 import moe.pulse.scan.core.data.PulseSettings
-import moe.pulse.scan.core.export.Tags
 import moe.pulse.scan.ui.common.rememberToast
 import moe.pulse.scan.ui.theme.BadgeStyle
 
@@ -79,6 +85,7 @@ import moe.pulse.scan.ui.theme.BadgeStyle
 fun EditorScreen(
     docKey: String,
     onClose: () -> Unit,
+    onCutout: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val app = context.applicationContext as PulseApp
@@ -99,28 +106,30 @@ fun EditorScreen(
         if (uris.isNotEmpty()) vm.addPages(uris) {}
     }
 
+    val tags = stringArrayResource(R.array.tags)
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "PAGE ${vm.currentIndex + 1} OF ${vm.pages.size}",
+                        stringResource(R.string.page_of, vm.currentIndex + 1, vm.pages.size),
                         style = BadgeStyle,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to library")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_to_library_cd))
                     }
                 },
                 actions = {
                     IconButton(onClick = {
                         addPagesPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }) {
-                        Icon(Icons.Filled.AddPhotoAlternate, contentDescription = "Add pages")
+                        Icon(Icons.Filled.AddPhotoAlternate, contentDescription = stringResource(R.string.add_pages_cd))
                     }
                     IconButton(onClick = { showExport = true }) {
-                        Icon(Icons.Filled.SaveAlt, contentDescription = "Export")
+                        Icon(Icons.Filled.SaveAlt, contentDescription = stringResource(R.string.export_cd))
                     }
                 },
             )
@@ -138,7 +147,7 @@ fun EditorScreen(
                 }
             }
 
-            // Naming system: legacy tag taxonomy
+            // Naming system: paper tags
             Box(modifier = Modifier.height(96.dp)) {
                 FlowRow(
                     modifier = Modifier
@@ -147,7 +156,7 @@ fun EditorScreen(
                         .padding(horizontal = 12.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Tags.ALL.forEach { tag ->
+                    tags.forEach { tag ->
                         val selected = tag in vm.selectedTags
                         FilterChip(
                             selected = selected,
@@ -183,7 +192,7 @@ fun EditorScreen(
                         shape = MaterialTheme.shapes.small,
                     ) {
                         Text(
-                            text = if (vm.engineOn) "PULSE: ON" else "ORIGINAL",
+                            text = if (vm.engineOn) stringResource(R.string.engine_badge_on) else stringResource(R.string.engine_badge_off),
                             style = BadgeStyle.copy(
                                 color = if (vm.engineOn) MaterialTheme.colorScheme.onPrimaryContainer
                                 else MaterialTheme.colorScheme.onTertiaryContainer,
@@ -203,8 +212,9 @@ fun EditorScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.height(16.dp))
+                            val status = vm.statusMessage
                             Text(
-                                text = vm.statusMessage ?: "PROCESSING…",
+                                text = if (status != null) stringResource(status.res, *status.args.toTypedArray()) else stringResource(R.string.processing),
                                 style = BadgeStyle.copy(color = MaterialTheme.colorScheme.onPrimary),
                             )
                         }
@@ -226,7 +236,7 @@ fun EditorScreen(
                     Text("‹", style = MaterialTheme.typography.headlineSmall)
                 }
                 Text(
-                    "PAGE ${vm.currentIndex + 1} OF ${vm.pages.size}",
+                    stringResource(R.string.page_short, vm.currentIndex + 1, vm.pages.size),
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
@@ -253,10 +263,10 @@ fun EditorScreen(
                                 vm.onParamChanged()
                             })
                             Spacer(Modifier.width(8.dp))
-                            Text("ENGINE", style = MaterialTheme.typography.labelLarge)
+                            Text(stringResource(R.string.engine_label), style = MaterialTheme.typography.labelLarge)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("OCR PROTECT", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.ocr_protect_label), style = MaterialTheme.typography.labelMedium)
                             Spacer(Modifier.width(4.dp))
                             Switch(checked = vm.ocrProtect, onCheckedChange = {
                                 vm.ocrProtect = it
@@ -268,20 +278,43 @@ fun EditorScreen(
                     if (vm.engineOn) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("FILTER", style = MaterialTheme.typography.labelMedium)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(R.string.deskew_label), style = MaterialTheme.typography.labelMedium)
+                                Spacer(Modifier.width(4.dp))
+                                Switch(checked = vm.deskew, onCheckedChange = {
+                                    vm.deskew = it
+                                    vm.onParamChanged()
+                                })
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(R.string.enhance_label), style = MaterialTheme.typography.labelMedium)
+                                Spacer(Modifier.width(4.dp))
+                                Switch(checked = vm.enhanceLowLight, onCheckedChange = {
+                                    vm.enhanceLowLight = it
+                                    vm.onParamChanged()
+                                })
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(stringResource(R.string.filter_label), style = MaterialTheme.typography.labelMedium)
                             Spacer(Modifier.width(12.dp))
                             FilterChip(
                                 selected = vm.removeRed,
                                 onClick = { vm.removeRed = !vm.removeRed; vm.onParamChanged() },
-                                label = { Text("RED", style = MaterialTheme.typography.labelMedium) },
+                                label = { Text(stringResource(R.string.filter_red), style = MaterialTheme.typography.labelMedium) },
                             )
                             Spacer(Modifier.width(8.dp))
                             FilterChip(
                                 selected = vm.removeBlue,
                                 onClick = { vm.removeBlue = !vm.removeBlue; vm.onParamChanged() },
-                                label = { Text("BLUE", style = MaterialTheme.typography.labelMedium) },
+                                label = { Text(stringResource(R.string.filter_blue), style = MaterialTheme.typography.labelMedium) },
                             )
                         }
 
@@ -289,40 +322,47 @@ fun EditorScreen(
                             modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("STYLE", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.style_label), style = MaterialTheme.typography.labelMedium)
                             Spacer(Modifier.width(12.dp))
                             SingleChoiceSegmentedButtonRow(modifier = Modifier.weight(1f)) {
-                                val labels = listOf("Original", "De-Pencil", "De-Ink")
-                                labels.forEachIndexed { i, label ->
+                                val labels = listOf(
+                                    R.string.style_original,
+                                    R.string.style_depencil,
+                                    R.string.style_deink,
+                                    R.string.style_bw,
+                                )
+                                labels.forEachIndexed { i, res ->
                                     SegmentedButton(
                                         selected = vm.style == i,
                                         onClick = { vm.style = i; vm.onParamChanged() },
                                         shape = SegmentedButtonDefaults.itemShape(index = i, count = labels.size),
-                                        label = { Text(label, style = MaterialTheme.typography.labelMedium) },
+                                        label = {
+                                            Text(stringResource(res), style = MaterialTheme.typography.labelMedium)
+                                        },
                                     )
                                 }
                             }
                         }
 
-                        // Page ops
+                        // Page ops (icon row)
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            AssistChip(onClick = { vm.rotateCurrent() }, label = { Text("Rotate") })
-                            AssistChip(onClick = { vm.moveCurrent(-1) }, label = { Text("Move up") })
-                            AssistChip(onClick = { vm.moveCurrent(+1) }, label = { Text("Move down") })
-                            AssistChip(
-                                onClick = { vm.deleteCurrent() },
-                                label = { Text("Delete", color = MaterialTheme.colorScheme.error) },
-                            )
+                            PageOp(Icons.Filled.RotateRight, stringResource(R.string.rotate_cd)) { vm.rotateCurrent() }
+                            PageOp(Icons.Filled.ArrowUpward, stringResource(R.string.move_up_cd)) { vm.moveCurrent(-1) }
+                            PageOp(Icons.Filled.ArrowDownward, stringResource(R.string.move_down_cd)) { vm.moveCurrent(+1) }
+                            PageOp(Icons.Filled.ContentCut, stringResource(R.string.cutout_cd)) {
+                                vm.prepareCutout { onCutout() }
+                            }
+                            PageOp(Icons.Filled.DeleteOutline, stringResource(R.string.delete_page_cd), tint = MaterialTheme.colorScheme.error) { vm.deleteCurrent() }
                         }
                     }
                 }
             }
 
             Text(
-                "POWERED BY PULSE ENGINE",
+                stringResource(R.string.footer_powered),
                 style = BadgeStyle.copy(color = MaterialTheme.colorScheme.outline, fontSize = MaterialTheme.typography.labelSmall.fontSize),
                 modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                 textAlign = TextAlign.Center,
@@ -339,6 +379,13 @@ fun EditorScreen(
             },
             onDismiss = { showExport = false },
         )
+    }
+}
+
+@Composable
+private fun PageOp(icon: ImageVector, cd: String, tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface, onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.size(40.dp)) {
+        Icon(icon, contentDescription = cd, tint = tint)
     }
 }
 
@@ -364,7 +411,7 @@ private fun PagePreview(vm: EditorViewModel, index: Int) {
         if (bmp != null) {
             Image(
                 bitmap = bmp.asImageBitmap(),
-                contentDescription = "Page ${index + 1}",
+                contentDescription = stringResource(R.string.page_cd, index + 1),
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {

@@ -53,6 +53,8 @@ import moe.pulse.scan.core.engine.Transform
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.Point
+import androidx.compose.ui.res.stringResource
+import moe.pulse.scan.R
 
 /**
  * Manual corner fine-tuning ("drag the four handles"), initialized from the
@@ -105,10 +107,10 @@ fun CropScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Adjust corners") },
+                title = { Text(stringResource(R.string.crop_title)) },
                 navigationIcon = {
                     IconButton(onClick = onCancel) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_cd))
                     }
                 },
                 actions = {
@@ -129,7 +131,7 @@ fun CropScreen(
                             }
                         }
                     }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "Auto-detect")
+                        Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.autodetect_cd))
                     }
                 },
             )
@@ -173,7 +175,7 @@ fun CropScreen(
                     if (processing) {
                         CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp).fillMaxWidth(0.1f), strokeWidth = 2.dp)
                     }
-                    Text("Add to document")
+                    Text(stringResource(R.string.add_to_document))
                 }
             }
         },
@@ -197,7 +199,7 @@ fun CropScreen(
             ) {
                 androidx.compose.foundation.Image(
                     bitmap = bmp.asImageBitmap(),
-                    contentDescription = "Crop source",
+                    contentDescription = stringResource(R.string.crop_source_cd),
                     modifier = Modifier
                         .align(Alignment.Center)
                         .fillMaxSize(),

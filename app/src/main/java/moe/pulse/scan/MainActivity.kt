@@ -66,6 +66,7 @@ class MainActivity : FragmentActivity() {
                                     popUpTo("library") { inclusive = true }
                                 }
                             },
+                            onCutout = { nav.navigate("cutout") },
                         )
                     }
                     composable("editor/doc/{docId}") { entry ->
@@ -77,7 +78,11 @@ class MainActivity : FragmentActivity() {
                                     popUpTo("library") { inclusive = true }
                                 }
                             },
+                            onCutout = { nav.navigate("cutout") },
                         )
+                    }
+                    composable("cutout") {
+                        moe.pulse.scan.ui.cutout.CutoutScreen(onClose = { nav.popBackStack() })
                     }
                     composable("settings") {
                         SettingsScreen(onBack = { nav.popBackStack() })

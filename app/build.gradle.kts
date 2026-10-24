@@ -13,8 +13,8 @@ android {
         applicationId = "moe.pulse.scan"
         minSdk = 24
         targetSdk = 35
-        versionCode = 2
-        versionName = "2.0.0"
+        versionCode = 3
+        versionName = "2.1.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.camerax.view)
 
     implementation(libs.mlkit.text.chinese)
+    implementation(libs.mlkit.selfie.segmentation)
     implementation(libs.gms.document.scanner)
     implementation(libs.opencv)
 

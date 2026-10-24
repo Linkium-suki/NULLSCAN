@@ -76,6 +76,9 @@ import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.imgproc.Imgproc
+import androidx.compose.ui.res.stringResource
+import moe.pulse.scan.R
+import moe.pulse.scan.ui.common.rememberToast
 
 /**
  * Aether Lens: live CameraX viewfinder with OpenCV document-quad overlay,
@@ -107,6 +110,9 @@ fun ScannerScreen(
         if (!hasPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
+    val toast = rememberToast()
+    val gmsFallbackMsg = stringResource(R.string.gms_fallback_toast)
+    var gmsToastShown by remember { mutableStateOf(false) }
     val stability = remember { StabilityMonitor(context) }
     DisposableEffect(Unit) {
         stability.start()
@@ -188,6 +194,10 @@ fun ScannerScreen(
             }
             .addOnFailureListener {
                 // GMS unavailable / module not ready — manual viewfinder is the fallback.
+                if (!gmsToastShown) {
+                    gmsToastShown = true
+                    toast(gmsFallbackMsg)
+                }
             }
     }
 
@@ -253,13 +263,13 @@ fun ScannerScreen(
             ) {
                 Icon(Icons.Filled.CameraAlt, contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.outline)
                 Text(
-                    text = if (permissionDeniedOnce) "Camera permission was denied" else "Requesting camera…",
+                    text = if (permissionDeniedOnce) stringResource(R.string.camera_denied) else stringResource(R.string.camera_requesting),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(vertical = 16.dp),
                 )
                 if (permissionDeniedOnce) {
                     Button(onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) }) {
-                        Text("Grant camera access")
+                        Text(stringResource(R.string.grant_camera))
                     }
                 }
             }
@@ -273,7 +283,7 @@ fun ScannerScreen(
                 .padding(start = 16.dp, top = 48.dp)
                 .size(48.dp),
         ) {
-            Icon(Icons.Filled.DocumentScanner, contentDescription = "System scanner")
+            Icon(Icons.Filled.DocumentScanner, contentDescription = stringResource(R.string.system_scanner_cd))
         }
 
         Surface(
@@ -282,7 +292,7 @@ fun ScannerScreen(
             color = if (isStable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
         ) {
             Text(
-                text = if (isStable) "SYSTEM READY" else "STABILIZE DEVICE",
+                text = if (isStable) stringResource(R.string.status_ready) else stringResource(R.string.status_unstable),
                 style = BadgeStyle.copy(color = if (isStable) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer),
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
@@ -305,7 +315,7 @@ fun ScannerScreen(
                 importing = true
                 picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }, modifier = Modifier.size(56.dp)) {
-                Icon(Icons.Filled.PhotoLibrary, contentDescription = "Import from gallery")
+                Icon(Icons.Filled.PhotoLibrary, contentDescription = stringResource(R.string.import_cd))
             }
 
             FilledIconButton(
@@ -335,7 +345,7 @@ fun ScannerScreen(
                 ),
                 shape = CircleShape,
             ) {
-                Icon(Icons.Filled.CameraAlt, contentDescription = "Capture", modifier = Modifier.size(36.dp))
+                Icon(Icons.Filled.CameraAlt, contentDescription = stringResource(R.string.capture_cd), modifier = Modifier.size(36.dp))
             }
 
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainer) {

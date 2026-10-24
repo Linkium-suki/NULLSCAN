@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pulse</string>
+    <string name="share_via">分享至</string>
+
+    <!-- Library -->
+    <string name="search_hint">搜索标题、标签、OCR 全文…</string>
+    <string name="empty_title">还没有扫描件</string>
+    <string name="empty_subtitle">点击扫描按钮拍摄或导入纸张。</string>
+    <string name="scan_cd">扫描</string>
+    <string name="settings_cd">设置</string>
+    <string name="delete_cd">删除文档</string>
+    <string name="delete_dialog_title">删除文档？</string>
+    <string name="delete_dialog_message">“%1$s”及其 %2$d 个加密页面将被永久移除。</string>
+    <string name="action_delete">删除</string>
+    <string name="action_cancel">取消</string>
+    <string name="deleted_toast">已删除</string>
+    <string name="locked_title">文档库已上锁</string>
+    <string name="unlock_action">解锁</string>
+
+    <!-- Scanner -->
+    <string name="status_ready">已就绪</string>
+    <string name="status_unstable">请持稳设备</string>
+    <string name="import_cd">从相册导入</string>
+    <string name="capture_cd">拍摄</string>
+    <string name="system_scanner_cd">系统扫描器</string>
+    <string name="camera_denied">相机权限被拒绝</string>
+    <string name="camera_requesting">正在请求相机权限…</string>
+    <string name="grant_camera">授予相机权限</string>
+    <string name="importing">正在导入…</string>
+    <string name="gms_fallback_toast">系统扫描器不可用，已切换为手动模式</string>
+    <string name="pages_count">%1$d</string>
+
+    <!-- Crop -->
+    <string name="crop_title">调整四角</string>
+    <string name="back_cd">返回</string>
+    <string name="autodetect_cd">自动识别边缘</string>
+    <string name="crop_source_cd">裁剪原图</string>
+    <string name="add_to_document">加入文档</string>
+    <string name="processing">处理中…</string>
+
+    <!-- Editor -->
+    <string name="page_of">第 %1$d 页 / 共 %2$d 页</string>
+    <string name="page_short">第 %1$d 页 / 共 %2$d 页</string>
+    <string name="back_to_library_cd">返回文档库</string>
+    <string name="add_pages_cd">添加页面</string>
+    <string name="export_cd">导出</string>
+    <string name="engine_badge_on">PULSE：开启</string>
+    <string name="engine_badge_off">原图</string>
+    <string name="engine_label">引擎</string>
+    <string name="ocr_protect_label">文字保护</string>
+    <string name="deskew_label">自动摆正</string>
+    <string name="enhance_label">弱光增强</string>
+    <string name="filter_label">滤镜</string>
+    <string name="filter_red">红笔</string>
+    <string name="filter_blue">蓝笔</string>
+    <string name="style_label">风格</string>
+    <string name="style_original">原图</string>
+    <string name="style_depencil">去铅笔</string>
+    <string name="style_deink">去墨迹</string>
+    <string name="style_bw">黑白</string>
+    <string name="op_rotate">旋转</string>
+    <string name="op_move_up">上移</string>
+    <string name="op_move_down">下移</string>
+    <string name="op_cutout">抠图</string>
+    <string name="op_delete">删除</string>
+    <string name="rotate_cd">旋转页面</string>
+    <string name="move_up_cd">页面上移</string>
+    <string name="move_down_cd">页面下移</string>
+    <string name="cutout_cd">主体抠图</string>
+    <string name="delete_page_cd">删除页面</string>
+    <string name="page_cd">第 %1$d 页</string>
+    <string name="footer_powered">由 PULSE 引擎驱动</string>
+    <string name="batch_processing">批量处理中…</string>
+    <string name="processing_page_n">正在处理第 %1$d / %2$d 页</string>
+    <string name="loading">加载中…</string>
+    <string name="ocr_running">OCR 识别中…</string>
+    <string name="archiving">归档中…</string>
+    <string name="archiving_page_n">正在归档第 %1$d / %2$d 页</string>
+
+    <!-- Export sheet -->
+    <string name="export_title">导出</string>
+    <string name="export_pdf">保存 PDF</string>
+    <string name="export_pdf_sub">下载/Pulse 目录 · PS_ 命名</string>
+    <string name="pdf_watermark">PDF 水印</string>
+    <string name="share_pdf">分享 PDF</string>
+    <string name="share_pdf_sub">通过系统分享面板</string>
+    <string name="save_page_png">页面存为 PNG</string>
+    <string name="save_page_jpg">页面存为 JPG</string>
+    <string name="save_gallery_sub">图片/Pulse 相册</string>
+    <string name="export_ocr_text">导出 OCR 文本</string>
+    <string name="export_ocr_sub">当前页按文本块顺序 · 下载/Pulse 目录</string>
+    <string name="save_to_library">存入文档库</string>
+    <string name="save_to_library_sub">AES-256-GCM 加密</string>
+    <string name="saved_toast">已保存到 下载/Pulse</string>
+    <string name="save_failed_toast">保存失败</string>
+    <string name="no_text_toast">未识别到文本</string>
+    <string name="archived_toast">已存入文档库</string>
+    <string name="archive_failed_toast">归档失败</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="archive_lock">文档库锁</string>
+    <string name="archive_lock_sub">启动时需要生物识别或设备凭据</string>
+    <string name="pdf_watermark_title">PDF 水印</string>
+    <string name="pdf_watermark_sub">在导出页面盖 “PAGE n | PULSE” 水印</string>
+    <string name="dynamic_color">动态取色</string>
+    <string name="dynamic_color_sub">跟随 Material You 壁纸配色</string>
+    <string name="about_body">Pulse 2.1.0 — 生而为离线：Pulse 永不申请 INTERNET 权限。OpenCV 还原与 ML Kit OCR 全部在本地完成。存入文档库的页面使用 Keystore 密钥做 AES-256-GCM 加密。基于 Apache-2.0 许可。</string>
+
+    <!-- Cutout -->
+    <string name="cutout_title">抠图</string>
+    <string name="cutout_mode_ai">人像（AI）</string>
+    <string name="cutout_mode_ai_sub">端侧人像分割模型</string>
+    <string name="cutout_mode_grabcut">主体（框选）</string>
+    <string name="cutout_mode_grabcut_sub">在主体外拖一个矩形框，然后运行 GrabCut</string>
+    <string name="cutout_drag_hint">在照片上拖动以绘制主体选框</string>
+    <string name="cutout_run">开始抠图</string>
+    <string name="cutout_feather">羽化</string>
+    <string name="cutout_background">背景</string>
+    <string name="bg_transparent">透明</string>
+    <string name="bg_white">白色</string>
+    <string name="bg_black">黑色</string>
+    <string name="cutout_apply">保存抠图 PNG</string>
+    <string name="cutout_running">分割中…</string>
+    <string name="cutout_no_subject_toast">未找到主体——试试更紧的选框</string>
+    <string name="cutout_saved_toast">抠图已保存到 图片/Pulse</string>
+    <string name="cutout_failed_toast">抠图失败</string>
+    <string name="cutout_redraw">重置选框</string>
+
+    <!-- Tags -->
+    <string-array name="tags">
+        <item>语文</item>
+        <item>数学</item>
+        <item>英语</item>
+        <item>物理</item>
+        <item>化学</item>
+        <item>生物</item>
+        <item>历史</item>
+        <item>地理</item>
+        <item>政治</item>
+        <item>信息</item>
+        <item>通用</item>
+        <item>初一</item>
+        <item>初二</item>
+        <item>初三</item>
+        <item>高一</item>
+        <item>高二</item>
+        <item>高三</item>
+        <item>试卷</item>
+        <item>笔记</item>
+        <item>错题</item>
+        <item>答案</item>
+        <item>一模</item>
+        <item>二模</item>
+    </string-array>
+</resources>

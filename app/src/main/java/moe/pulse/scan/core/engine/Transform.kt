@@ -80,6 +80,37 @@ object Transform {
         return dst
     }
 
+    /**
+     * Median near-horizontal text-line angle in degrees (positive = page is
+     * rotated clockwise). Returns 0 when fewer than 5 plausible text lines
+     * are found, so callers can skip deskew safely.
+     */
+    fun estimateSkewAngle(bgr: Mat): Double {
+        val gray = Mat()
+        val edges = Mat()
+        val lines = Mat()
+        try {
+            Imgproc.cvtColor(bgr, gray, Imgproc.COLOR_BGR2GRAY)
+            Imgproc.Canny(gray, edges, 50.0, 150.0)
+            Imgproc.HoughLinesP(edges, lines, 1.0, Math.PI / 180.0, 60, gray.cols() / 4.0, 25.0)
+            val angles = ArrayList<Double>(lines.rows())
+            for (i in 0 until lines.rows()) {
+                val l = lines.get(i, 0)
+                var ang = Math.toDegrees(Math.atan2(l[3] - l[1], l[2] - l[0]))
+                while (ang > 45.0) ang -= 90.0
+                while (ang <= -45.0) ang += 90.0
+                if (Math.abs(ang) < 20.0) angles.add(ang)
+            }
+            if (angles.size < 5) return 0.0
+            angles.sort()
+            return angles[angles.size / 2]
+        } finally {
+            gray.release()
+            edges.release()
+            lines.release()
+        }
+    }
+
     fun orderQuad(points: Array<Point>): Array<Point> {
         val bySum = points.sortedBy { it.x + it.y }
         val tl = bySum.first()
